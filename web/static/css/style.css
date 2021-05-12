@@ -1,0 +1,25 @@
+	button{
+		font-size: 20px;
+		font-weight:bold;
+		color: white;
+		border:1;
+		background-color:#97CBFF;
+		border-radius:10px;
+		cursor:pointer;
+	}
+
+	button:hover{
+		background-color:#84C1FF;
+		border:2px #0ca3d2 solid;
+	}
+	
+	body {
+		line-height: 1;
+		color: #003D79;
+		background: #ECF5FF;
+	}
+
+	input {
+	  font-family: 'Lucida Grande', Tahoma, Verdana, sans-serif;
+	  font-size: 20px;
+	}

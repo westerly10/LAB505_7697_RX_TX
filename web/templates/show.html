@@ -1,0 +1,250 @@
+<!--畫圖表用-->
+<!DOCTYPE html>
+<html>
+
+
+<head>
+    <title></title>
+    <!--匯入所需的套件-->
+    <script type="text/javascript" src="./static/script/jquery.min.js"> </script>
+    <script type="text/javascript" src="./static/script/Chart.js"></script>
+    <script type="text/javascript" src="./static/script/Chart.bundle.js"></script>
+    <script type="text/javascript" src="./static/script/Chart.bundle.min.js"></script>
+    <script type="text/javascript" src="./static/script/Chart.min.js"></script>
+    <script type="text/javascript" src="./static/script/utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<!-- <style>
+    .el-checkbox__input.is-checked.el-checkbox__inner,
+    .el-checkbox__input.is-indeterminate.el-checkbox__inner {
+        background-color: rgb(65, 189, 102);
+        border-color: rgb(47, 201, 68);
+    }
+
+    .el-checkbox__input.is-checked+.el-checkbox__label {
+        color: rgb(47, 201, 93);
+    }
+
+    .el-checkbox.is-bordered.is-checked {
+        border-color: rgb(47, 201, 98);
+    }
+
+    .el-checkbox__input.is-focus.el-checkbox__inner {
+        border-color: rgb(47, 201, 93);
+    }
+</style> -->
+
+<body>
+    <div id="app">
+        <div class="line"></div>
+
+        <p v-text="message"></p>
+        <!-- <el-button @click="relayButton = true">Button</el-button> -->
+        <el-dialog :relayButton.sync="relayButton" title="模組狀態">
+            <p>繼電器開啟</p>
+
+        </el-dialog>
+
+
+        <!-- 新增按鈕物件 onclick觸發view() function 顯示按鈕叫SHOW -->
+        <!-- <el-button type="primary" onclick="view();" value="SHOW">顯圖表</el-button> -->
+        <!--新增按鈕物件 onclick觸發control() function填入open參數 顯示按鈕叫RELAY_OPEN-->
+        <!-- <el-button type="primary" onclick="control('open');" value="RELAY_OPEN" @click="relayButton=true">繼電器開啟 -->
+        <!-- </el-button> -->
+        <!--新增按鈕物件 onclick觸發control() function填入close參數 顯示按鈕叫RELAY_CLOSE-->
+        <!-- <el-button type="primary" onclick="control('close');" value="RELAY_CLOSE">繼電器關閉</el-button> -->
+
+
+        <div style="background-color:rgb(250, 250, 221); padding:20px; border-radius: 40px; margin: 10px;">
+            <div>
+                <!-- LED -->
+                <div style="background-color:rgb(241, 226, 248); padding:5px; border-radius: 20px; margin: 5px;">
+                    <p style="font-weight: bold; font-family: American ;">LED
+                        <el-tooltip :content="'Switch value: ' + value" placement="top">
+                            <el-switch @change="control_led" v-model="value" active-color="#13ce66"
+                                inactive-color="#ff4949" active-value="1" inactive-value="0">
+                            </el-switch>
+                        </el-tooltip>
+                    </p>
+                    <p style="text-align: center; font-weight: bold; font-family: Microsoft JhengHei;">讀取Switch狀態</p>
+                    <p></p>
+                </div>
+
+
+                <!-- led -->
+                <div style="background-color:rgb(253, 255, 143); padding:5px; border-radius: 20px; margin: 5px;">
+                    <p style="text-align: center; font-weight: bold; font-family: Microsoft JhengHei;">改變主站LED狀態</p>
+                    <p>控制LED：</p>
+                    <template>
+                        <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">
+                            ALL</el-checkbox>
+                    </template>
+                    <div style="margin-top: 20px; text-align: center; ">
+                        <el-checkbox-group text-color="#FFFFB9" fill="#4F9D9D" v-model="checkedleds" size="small"
+                            @change="handleCheckedledsChange">
+                            <el-checkbox-button v-for="led in ledsOptions" :label="led" :key="led">{{led}}
+                            </el-checkbox-button>
+                        </el-checkbox-group>
+                    </div>
+                </div>
+
+
+                <!-- 馬達位置讀 -->
+                <div style="background-color:rgb(163, 255, 154); padding:5px; border-radius: 20px; margin: 5px;">
+
+                    <p style="text-align: center; font-weight: bold; font-family: Microsoft JhengHei;">讀取馬達位置</p>
+                    <p>選取馬達：</p>
+                    <div>
+                        <template>
+                            <el-select v-model="valueOfMotorNum" placeholder="選取馬達">
+                                <el-option v-for="item in options" :key="item.motor_num" :label="item.label"
+                                    :value="item.motor_num" :disabled="item.disabled">
+                                </el-option>
+                            </el-select>
+                        </template>
+                    </div>
+                    <br>
+                    <el-button type="success" plain size="mini" @click="motor_read">送出</el-button>
+                    <p style="font-weight: bold; font-family: monospace;">POSITION：</p>
+                    馬達座標：
+                    <!-- <el-col :span="7">
+                        <el-card shadow="hover">
+
+                        </el-card>
+                    </el-col>
+                    <br><br> -->
+                </div>
+
+
+                <!-- 馬達控制 -->
+                <div style="background-color:rgb(86, 247, 199); padding:5px; border-radius: 20px; margin: 5px;">
+                    <p style="text-align: center; font-weight: bold; font-family: Microsoft JhengHei;">控制馬達移動</p>
+                    <p>選取馬達：</p>
+                    <div>
+                        <template>
+                            <el-select v-model="valueOfMotorNum" placeholder="選取馬達">
+                                <el-option v-for="item in options" :key="item.motor_num" :label="item.label"
+                                    :value="item.motor_num" :disabled="item.disabled">
+                                </el-option>
+                            </el-select>
+                        </template>
+                    </div>
+                    <div>
+                        <p>輸入正反轉(+/-)：</p>
+                        <el-input placeholder="填入數值：" v-model="input_motor_value" clearable></el-input>
+                        <p></p>
+                        <el-button type="success" plain size="mini" @click="motor_write">送出</el-button>
+                    </div>
+                    <br><br><br>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="jack" style="width:80%">
+            <!--宣告一個div區塊 命名jack 寬度為最大上限的80%-->
+        </div>
+        <script type="text/javascript">
+            const ledsOptions = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+
+            var app = new Vue({
+                el: '#app',
+
+                data: function () {
+                    return {
+                        message: '',
+                        relayButton: false,
+                        activeIndex: '1',
+                        activeIndex2: '1',
+                        value: 'true',
+                        // LED + SW READ
+                        temp_led: '0',
+                        // LED WRITE
+                        checkAll: false,
+                        checkedleds: [],
+                        leds: ledsOptions,
+                        isIndeterminate: true,
+                        //
+                        //motor write
+                        options: [{
+                            motor_num: '1',
+                            label: '馬達1'
+                        }, {
+                            motor_num: '2',
+                            label: '馬達2',
+                        }, {
+                            motor_num: '3',
+                            label: '馬達3'
+                        }, {
+                            motor_num: '4',
+                            label: '馬達4'
+                        }],
+                        //read motor
+                        motor_position: "",
+                        //write motor
+                        valueOfMotorNum: "",
+                        input_motor_value: ''
+                    }
+                },
+                methods: {
+                    handleSelect(key, keyPath) {
+                        console.log(key, keyPath);
+                    },
+                    // LED SW
+                    control_led() {
+                        console.log(this.temp_led);
+                        if (this.temp_led == '0')
+                            this.temp_led = '1';
+                        else this.temp_led = '0';
+                        $.getJSON("/LED/" + this.temp_led, {}, function (r) { });
+                    },
+
+
+                    //LED WRITE
+                    handleCheckAllChange(val) {
+                        this.checkedleds = val ? ledsOptions : [];
+                        this.isIndeterminate = false;
+                        if (val)
+                            this.handleCheckedledsChange(ledsOptions);
+                    },
+                    handleCheckedledsChange(value) {
+                        $.getJSON("/LED_CONTROL/" + value, {}, function (r) { });
+                    },
+
+                    //讀取馬達位置
+                    motor_read() {
+                        //以mqtt傳送 要讀哪個馬達
+                        var temp = "r" + this.valueOfMotorNum;
+                        if (this.valueOfMotorNum != "")
+                            $.getJSON("/MOTOR_WRITE/" + temp, {}, function (r) { });
+                        //$.getJSON("/MOTOR_READ/" + this.motor_position, {}, function (r) { });
+                        
+                    
+                    },
+
+                    //改變馬達數值
+                    motor_write() {
+                        if (!isNaN(this.input_motor_value)) { //數字才回傳
+                            var value = this.input_motor_value;
+                            var temp = "w" + this.valueOfMotorNum + "w" + value;
+                            $.getJSON("/MOTOR_WRITE/" + temp, {}, function (r) { });
+                        }
+                    },
+                }
+            })
+            // block 1 LED
+            function control(val) { $.getJSON("/LED/" + val, {}, function (r) { }); }
+            // block 2 SW
+            function control(val) { $.getJSON("/SW/" + val, {}, function (r) { }); }
+            // block 3 motor_read
+            function control(val) { $.getJSON("/READ/" + val, {}, function (r) { }); }
+            // block 4 motor_write
+            function control(val) { $.getJSON("/WRITE/" + val, {}, function (r) { }); }
+        </script>
+</body>
+
+</html>

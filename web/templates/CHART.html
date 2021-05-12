@@ -1,0 +1,120 @@
+<!--畫圖表用-->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    <!--匯入所需的套件-->
+    <script type="text/javascript" src="./static/script/jquery.min.js"> </script>
+    <script type="text/javascript" src="./static/script/Chart.js"></script>
+    <script type="text/javascript" src="./static/script/Chart.bundle.js"></script>
+    <script type="text/javascript" src="./static/script/Chart.bundle.min.js"></script>
+    <script type="text/javascript" src="./static/script/Chart.min.js"></script>
+    <script type="text/javascript" src="./static/script/utils.js"></script>
+</head>
+
+<body>
+    <style>
+        canvas {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+    </style>
+    <input type="button" onclick="view();" value="SHOW" />
+    <!--新增按鈕物件 onclick觸發view() function 顯示按鈕叫SHOW-->
+    <input type="button" onclick="control('open');" value="RELAY_OPEN" />
+    <!--新增按鈕物件 onclick觸發control() function填入open參數 顯示按鈕叫RELAY_OPEN-->
+    <input type="button" onclick="control('close');" value="RELAY_CLOSE" />
+    <!--新增按鈕物件 onclick觸發control() function填入close參數 顯示按鈕叫RELAY_CLOSE-->
+    <div id="jack" style="width:80%">
+        <!--宣告一個div區塊 命名jack 寬度為最大上限的80%-->
+    
+    </div>
+    <!-- <script>
+        window.setInterval(view, 20000);    //視窗每20秒執行view() function
+        function view() {       //view() function
+            var ydTEMP = [];//溫度
+            var ydRH = [];//濕度
+            var xdtime = [];//x軸標題
+            var jsonobj = null  //空資料
+
+            $.getJSON("/setT/", {}, function (r) {   //接受app.py的資料庫回傳值
+                jsonobj = r;        //將資料庫回傳值放到jsonobj
+                for (var num = 0; num < 5; num++) {   //將回傳值塞入參數
+                    xdtime.push(jsonobj["time"][num]);//x軸的時間戳記
+                    ydTEMP.push(parseInt(jsonobj["data"][num]))//溫度折線的值
+                    ydRH.push(parseInt(jsonobj["data2"][num]))//濕度折現的值
+                }
+                var config = {  //折線圖配置
+                    type: 'line',   //折線圖樣式 線條
+                    data: {         //折線屬性
+                        labels: xdtime,     //x軸值
+                        datasets: [{
+                            label: '溫度',    //標記為溫度
+                            fill: false,      //折線圖區間不填滿
+                            backgroundColor: window.chartColors.blue,   //折線顏色 藍色
+                            borderColor: window.chartColors.blue,       //折線顏色 藍色
+                            data: ydTEMP,      //y軸溫度
+                        }, {
+                            label: '濕度%',  //標記為濕度
+                            fill: false,
+                            backgroundColor: window.chartColors.green,
+                            borderColor: window.chartColors.green,
+                            data: ydRH,
+                        }]
+                    },
+                    options: {
+                        elements: {
+                            line: {
+                                tension: 0.00001 // 禁用曲線
+                            }
+                        },
+                        animation: {
+                            duration: 0, // general animation time
+                        },
+                        responsiveAnimationDuration: 0, // animation duration after a resize
+                        responsive: true,
+                        title: {    //圖表標題
+                            display: true,
+                            text: '溫溼度感測器',
+                            fontSize: 30
+                        },
+                        tooltips: {
+                            mode: 'index',
+                            intersect: false,   //鼠標碰到資料點時顯示
+                        },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true,
+                            animationDuration: 0, // duration of animations when hovering an item
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'SENSOR DATA' //x軸
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Value'    //y軸
+                                }
+                            }]
+                        }
+                    }
+                };
+                $('#jack').html("");
+                $('#jack').append('<canvas id="canvas"></canvas>');
+                var ctx = document.getElementById('canvas').getContext('2d');
+                line = new Chart(ctx, config);
+            });
+        }
+        function control(val) { $.getJSON("/relay/" + val, {}, function (r) { }); }
+    </script> -->
+</body>
+
+</html>
