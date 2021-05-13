@@ -7,7 +7,7 @@ import demjson
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc)) # rc 為狀態碼 0為連接上
     client.subscribe("NTOU")
-
+    
 def on_message(client, userdata, msg):
     print(msg.topic+" " + ":" + str(msg.payload, encoding = "utf-8"))
     datetime_str = datetime.datetime.today().strftime("%Y/%m/%d %H:%M:%S")# 獲得當地時間

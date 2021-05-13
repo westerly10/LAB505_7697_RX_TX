@@ -110,7 +110,7 @@
                     <br>
                     <el-button type="success" plain size="mini" @click="motor_read">送出</el-button>
                     <p style="font-weight: bold; font-family: monospace;">POSITION：</p>
-                    馬達座標：
+                     <p>{{motor_value}}</p>
                     <!-- <el-col :span="7">
                         <el-card shadow="hover">
 
@@ -221,9 +221,8 @@
                         var temp = "r" + this.valueOfMotorNum;
                         if (this.valueOfMotorNum != "")
                             $.getJSON("/MOTOR_WRITE/" + temp, {}, function (r) { });
-                        //$.getJSON("/MOTOR_READ/" + this.motor_position, {}, function (r) { });
-                        
-                    
+                        //抓7697回傳之馬達數值
+                            motor_position  = $.getJSON("/MOTOR_GET_MOOTER_VALUE/", {}, function (r) {});
                     },
 
                     //改變馬達數值
