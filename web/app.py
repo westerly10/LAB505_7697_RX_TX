@@ -17,14 +17,22 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     print(msg.topic+" " + ":" + str(msg.payload, encoding="utf-8"))
-    host = "140.121.198.196"    # Broker's IP       
+    host = "140.121.198.196"    # Broker's IP
     topic = "NTOU_1"           # Topic
-    publish.single(topic, "xxx", qos=1, hostname=host)  # 發布訊息 qos
-    # if msg.payload[0] == 'r':  # payload 回傳第0格表示為馬達回傳功能、後面表示馬達數值
-    #     # value = msg.payload[1]
-    #     motor_position = msg.payload[1]
-    # else:
-    #     motor_position = 0
+    # publish.single(topic, "xxx", qos=1, hostname=host)  # 發布訊息 qos
+    if msg.payload[0] == 'r':  # payload 回傳第0格表示為馬達回傳功能、後面表示馬達數值
+        # value = msg.payload[1]
+        motor_position = msg.payload[1]
+    else:
+        motor_position = 0
+
+# @app.route('/MOTOR_GET_MOOTER_VALUE/<VAL>', methods=['POST'])
+# def MOTOR_GET_MOOTER_VALUE(VAL):
+#     print(VAL)
+#     # MQRR SUB接值
+#     return "3000"
+
+
 client = mqtt.Client()
 
 # 設定連線的動作
@@ -40,13 +48,13 @@ client.connect("140.121.198.196", 1883, 60)
 # 也可以手動使用其他loop函式來進行連接
 
 
-
 # 單一LED控制
 @app.route('/LED/<VAL>')
 def LED(VAL):  # 對單一LED控制
     print(VAL)
     host = "140.121.198.196"    # Broker's IP
     topic = "NTOU_1"           # Topic
+    # client.username_pw_set("lab505", "lab505")
     if VAL == "1":           # 開啟LED
         status = "1"
     elif VAL == "0":  # 關閉LED
@@ -77,13 +85,6 @@ def MOTOR_RITE(VAL):  # 對馬達讀取
     return""
 
 
-# @app.route('/MOTOR_GET_MOOTER_VALUE/<VAL>', methods=['POST'])
-# def MOTOR_GET_MOOTER_VALUE(VAL):
-#     print(VAL)
-#     # MQRR SUB接值
-#     return "3000"
-
-
 @app.route('/MOTOR_WRITE/<VAL>')
 def MOTOR_WRITE(VAL):  # 對馬達寫入
     print(VAL)
@@ -104,4 +105,4 @@ if __name__ == '__main__':  # 程式進入點
     app.config['TEMPLATES_AUTO_RELOAD'] = True  # 當template有修改會自動更新
     app.run(host='0.0.0.0', debug=False, threaded=True)  # 將web server啟動
 
-client.loop_forever()
+client.loop_forever()  # 放最後一行!!

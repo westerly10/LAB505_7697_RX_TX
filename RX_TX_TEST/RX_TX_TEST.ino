@@ -41,16 +41,13 @@ void TX_STM()
 	if ((digitalRead(2) == HIGH))
 	{ //當按下按鈕時的測試\\\\\\\\\\];
 		Serial.print("TX:send message to stm32. ");
-		Serial.write("A");	//debug
-		Serial1.write("A"); //TX
-		while (!Serial1.available())
-		{
-		}									  //RX有無收到訊號
-		Serial.println("successfully read."); //debug
-		Serial.println(Serial1.read());		  //debug
-	}
-	else
-	{ //
+		Serial.write("AAAAAAAAAA\n");	//debug
+		Serial1.write("aaaaaaaaaa"); //TX
+    delay(500);
+    //if(Serial1.available()){
+      Serial.println(Serial1.read());      //debug
+    // }
+								  //RX有無收到訊號
 	}
 }
 
